@@ -1,0 +1,10 @@
+= Run semaphoreci build
+
+run-semaphoreci-build is a Go tool that help us to start a build in semaphoreci.
+
+== Example
+
+[source, bash]
+----
+run-semaphoreci-build --owner=mmatur --project=run-semaphoreci-build --branch=master --sha=4b480ece136933bdc2770c1bad991e9b4459e13
+----
