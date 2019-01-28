@@ -98,7 +98,7 @@ func findProject(client *v1.Client, ownerName string, projectName string) (v1.Pr
 	return v1.Project{}, fmt.Errorf("no project found for owner=%q and project=%q", ownerName, projectName)
 }
 
-func findBranchID(client *v1.Client, project v1.Project, branchName string, SHA string) (int, error) {
+func findBranchID(client *v1.Client, project v1.Project, branchName string, sha string) (int, error) {
 	branches, _, err := client.Branch.GetByProject(project.HashID)
 	if err != nil {
 		return 0, err
@@ -109,19 +109,19 @@ func findBranchID(client *v1.Client, project v1.Project, branchName string, SHA 
 			return b.ID, nil
 		}
 
-		histories, _, err := client.Branch.GetHistory(project.HashID, b.ID, &v1.BranchHistoryOptions{})
+		histories, _, err := client.Branch.GetHistory(project.HashID, b.ID, nil)
 		if err != nil || histories == nil {
-			return 0, nil
+			return 0, fmt.Errorf("no branch found for branch name %q or commit %q", branchName, sha)
 		}
 
 		for _, build := range histories.Builds {
-			if build.Commit.ID == SHA {
+			if build.Commit.ID == sha {
 				return b.ID, nil
 			}
 		}
 	}
 
-	return 0, fmt.Errorf("no branch found for branch name %q or commit %q", branchName, SHA)
+	return 0, fmt.Errorf("no branch found for branch name %q or commit %q", branchName, sha)
 }
 
 func launchBuild(client *v1.Client, project v1.Project, branchID int, sha string) error {
