@@ -75,7 +75,7 @@ func rootRun(config *types.Config) error {
 		return err
 	}
 
-	branchID, err := findBranchID(client, project, config.Branch)
+	branchID, err := findBranchID(client, project, config.Branch, config.SHA)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func findProject(client *v1.Client, ownerName string, projectName string) (v1.Pr
 	return v1.Project{}, fmt.Errorf("no project found for owner=%q and project=%q", ownerName, projectName)
 }
 
-func findBranchID(client *v1.Client, project v1.Project, branchName string) (int, error) {
+func findBranchID(client *v1.Client, project v1.Project, branchName string, SHA string) (int, error) {
 	branches, _, err := client.Branch.GetByProject(project.HashID)
 	if err != nil {
 		return 0, err
@@ -108,9 +108,20 @@ func findBranchID(client *v1.Client, project v1.Project, branchName string) (int
 		if b.Name == branchName {
 			return b.ID, nil
 		}
+
+		histories, _, err := client.Branch.GetHistory(project.HashID, b.ID, &v1.BranchHistoryOptions{})
+		if err != nil || histories == nil {
+			return 0, nil
+		}
+
+		for _, build := range histories.Builds {
+			if build.Commit.ID == SHA {
+				return b.ID, nil
+			}
+		}
 	}
 
-	return 0, fmt.Errorf("no branch found for branch name %q", branchName)
+	return 0, fmt.Errorf("no branch found for branch name %q or commit %q", branchName, SHA)
 }
 
 func launchBuild(client *v1.Client, project v1.Project, branchID int, sha string) error {
@@ -125,10 +136,6 @@ func validate(config *types.Config) error {
 	}
 
 	if err := required(config.Project, "project"); err != nil {
-		return err
-	}
-
-	if err := required(config.Branch, "branch"); err != nil {
 		return err
 	}
 
