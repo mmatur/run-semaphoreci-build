@@ -7,15 +7,25 @@ import (
 	"strings"
 
 	"github.com/containous/flaeg"
-	"github.com/ldez/go-semaphoreci/v1"
-	"github.com/mmatur/run-semaphoreci-build/meta"
-	"github.com/mmatur/run-semaphoreci-build/types"
+	v1 "github.com/ldez/go-semaphoreci/v1"
 	"github.com/ogier/pflag"
 )
 
+// Config holds configuration.
+type Config struct {
+	Owner    string `description:"Repository owner"`
+	Project  string `description:"Project"`
+	Branch   string `description:"Branch to rebuild"`
+	SHA      string `description:"SHA to build"`
+	TagEvent bool   `description:"Start the build on tag event only will check $GITHUB_REF env variable"`
+}
+
+// NoOption empty struct.
+type NoOption struct{}
+
 func main() {
-	defaultCfg := &types.Config{}
-	defaultPointerCfg := &types.Config{}
+	defaultCfg := &Config{}
+	defaultPointerCfg := &Config{}
 
 	rootCmd := &flaeg.Command{
 		Name:                  "run-semaphoreci-build",
@@ -30,14 +40,13 @@ func main() {
 	flag := flaeg.New(rootCmd, os.Args[1:])
 
 	// version
-
 	versionCmd := &flaeg.Command{
 		Name:                  "version",
 		Description:           "Display the version.",
-		Config:                &types.NoOption{},
-		DefaultPointersConfig: &types.NoOption{},
+		Config:                &NoOption{},
+		DefaultPointersConfig: &NoOption{},
 		Run: func() error {
-			meta.DisplayVersion()
+			DisplayVersion()
 			return nil
 		},
 	}
@@ -45,13 +54,12 @@ func main() {
 	flag.AddCommand(versionCmd)
 
 	// Run command
-
 	if err := flag.Run(); err != nil && err != pflag.ErrHelp {
 		log.Printf("Error: %v\n", err)
 	}
 }
 
-func rootRun(config *types.Config) error {
+func rootRun(config *Config) error {
 	if config.SHA == "" {
 		config.SHA = os.Getenv("GITHUB_SHA")
 	}
@@ -130,7 +138,7 @@ func launchBuild(client *v1.Client, project v1.Project, branchID int, sha string
 	return err
 }
 
-func validate(config *types.Config) error {
+func validate(config *Config) error {
 	if err := required(config.Owner, "owner"); err != nil {
 		return err
 	}
