@@ -4,6 +4,24 @@
 
 == Example
 
+[source, hcl]
+----
+workflow "Build on tag" {
+  on = "create"
+  resolves = [
+    "Run",
+  ]
+}
+
+action "Run" {
+  uses = "./.github/actions/run-semaphoreci-build"
+  args = "--owner=mmatur --project=test --tagevent"
+  secrets = ["SEMAPHORECI_TOKEN"]
+}
+----
+
+As a standalone command line:
+
 [source, bash]
 ----
 run-semaphoreci-build --owner=mmatur --project=run-semaphoreci-build --branch=master --sha=4b480ece136933bdc2770c1bad991e9b4459e13
