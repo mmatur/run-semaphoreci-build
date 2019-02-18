@@ -1,6 +1,6 @@
-= Run semaphoreci build
+= Run SemaphoreCI build
 
-run-semaphoreci-build is a Go tool that help us to start a build in semaphoreci.
+`run-semaphoreci-build` is a Go tool that help us to start a build in link:https://semaphoreci.com[SemaphoreCI].
 
 == Example
 

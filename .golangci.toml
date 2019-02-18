@@ -35,7 +35,5 @@
   max-per-linter = 0
   max-same = 0
   exclude = [
-    "`version` is a global variable",
-    "`date` is a global variable",
-    "`commit` is a global variable"
+    "`(version|date|commit)` is a global variable", # version.go
   ]

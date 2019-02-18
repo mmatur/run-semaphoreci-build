@@ -2,24 +2,23 @@ project_name: run-semaphoreci-build
 
 builds:
   - binary: run-semaphoreci-build
-
-    main: .
-    ldflags:
-      - -s -w
-      - -X github.com/mmatur/run-semaphoreci-build/meta.version={{.Version}}
-      - -X github.com/mmatur/run-semaphoreci-build/meta.commit={{.Commit}}
-      - -X github.com/mmatur/run-semaphoreci-build/meta.date={{.Date}}
-
     goos:
       - linux
     goarch:
       - amd64
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^doc:'
+      - '^chore:'
+      - '^test:'
+      - '^tests:'
 
 archive:
   name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}'
   format: tar.gz
   files:
     - LICENSE
-
-release:
-  disable: true

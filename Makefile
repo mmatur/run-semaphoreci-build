@@ -14,7 +14,7 @@ clean:
 
 build: clean
 	@echo Version: $(VERSION)
-	GO111MODULE=on go build -v -ldflags '-X "github.com/mmatur/run-semaphoreci-build/meta.version=${VERSION}" -X "github.com/mmatur/run-semaphoreci-build/meta.commit=${SHA}" -X "github.com/mmatur/run-semaphoreci-build/meta.date=${BUILD_DATE}"'
+	GO111MODULE=on go build -v -ldflags '-X "main.version=${VERSION}" -X "main.commit=${SHA}" -X "main.date=${BUILD_DATE}"'
 
 test: clean
 	GO111MODULE=on go test -v -cover ./...
