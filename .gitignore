@@ -1,5 +1,4 @@
 .idea/
 vendor/
 dist/
-goreleaser
 run-semaphoreci-build

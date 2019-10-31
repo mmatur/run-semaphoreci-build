@@ -135,6 +135,7 @@ func findBranchID(client *v1.Client, project v1.Project, branchName string, sha 
 func launchBuild(client *v1.Client, project v1.Project, branchID int, sha string) error {
 	information, err := client.Builds.Launch(project.HashID, branchID, sha)
 	log.Println(information)
+
 	return err
 }
 
@@ -154,5 +155,6 @@ func required(field string, fieldName string) error {
 	if len(field) == 0 {
 		return fmt.Errorf("option %s is mandatory", fieldName)
 	}
+
 	return nil
 }
